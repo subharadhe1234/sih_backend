@@ -1,0 +1,38 @@
+# version: '3.8'
+
+services:
+  web:
+    depends_on:
+      - db
+    build: .
+    command: >
+      sh -c "python manage.py migrate  &&
+      python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env  # Ensure you have a .env file with your environment variables
+    ports:
+      - "8000:8000"
+    environment:
+      DEBUG: "1"  # Set to "0" for production
+      DB_NAME: "sih_backend"  # Ensure this matches your POSTGRES_DB
+      DB_USER: "postgres"  # Ensure this matches your POSTGRES_USER
+      DB_PASSWORD: "Radhe"  # Ensure this matches your POSTGRES_PASSWORD
+      DB_HOST: "db"  # Host should be 'db' for Docker network access
+
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: "krishna"  # Database name
+      POSTGRES_USER: "postgres"  # Database user
+      POSTGRES_PASSWORD: "Radhe"  # Database password
+      POSTGRES_LOG_STATEMENT: "all"  # Logs all SQL statements
+      POSTGRES_LOG_CONNECTIONS: "on"  # Logs connection attempts
+
+volumes:
+  postgres_data:  # Ensure consistency in volume naming
